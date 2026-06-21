@@ -9,7 +9,7 @@ export function toKeys(content: string): string[] {
   return content.split("\n").map((text) => {
     const n = seen.get(text) ?? 0;
     seen.set(text, n + 1);
-    return text === "" && n === 0 ? "" : `${text}#${n}`;
+    return `${text}#${n}`;
   });
 }
 
