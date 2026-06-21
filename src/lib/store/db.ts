@@ -1,4 +1,6 @@
 import Database from "better-sqlite3";
+import { mkdirSync } from "node:fs";
+import { dirname } from "node:path";
 
 const cache = new Map<string, Database.Database>();
 
@@ -22,6 +24,7 @@ export function ensureSchema(db: Database.Database): Database.Database {
 export function getDb(file = process.env.DB_FILE ?? ".data/animations.db"): Database.Database {
   const existing = cache.get(file);
   if (existing) return existing;
+  if (file !== ":memory:") mkdirSync(dirname(file), { recursive: true });
   const db = new Database(file);
   db.pragma("journal_mode = WAL");
   ensureSchema(db);
