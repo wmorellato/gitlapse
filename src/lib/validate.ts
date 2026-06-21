@@ -45,6 +45,9 @@ export function validateRepoUrl(raw: string): URL {
 }
 
 export function isPrivateIp(ip: string): boolean {
+  // IPv4-mapped IPv6 (e.g. ::ffff:127.0.0.1) — re-check the embedded IPv4.
+  const mapped = ip.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/i);
+  if (mapped) return isPrivateIp(mapped[1]);
   if (ip === "::1" || ip.startsWith("fc") || ip.startsWith("fd") || ip.startsWith("fe80")) return true;
   const m = ip.match(/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/);
   if (!m) return false;

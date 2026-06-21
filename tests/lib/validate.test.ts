@@ -42,6 +42,11 @@ describe("isPrivateIp", () => {
   it("allows public IPs", () => {
     expect(isPrivateIp("140.82.112.3")).toBe(false);
   });
+  it("flags IPv4-mapped IPv6 loopback/private and allows mapped public", () => {
+    expect(isPrivateIp("::ffff:127.0.0.1")).toBe(true);
+    expect(isPrivateIp("::ffff:10.0.0.1")).toBe(true);
+    expect(isPrivateIp("::ffff:140.82.112.3")).toBe(false);
+  });
 });
 
 describe("validateLocalPath", () => {
