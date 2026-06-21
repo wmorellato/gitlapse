@@ -421,7 +421,7 @@ describe("toKeys", () => {
     expect(toKeys("a\na\nb")).toEqual(["a#0", "a#1", "b#0"]);
   });
   it("returns one entry for empty content", () => {
-    expect(toKeys("")).toEqual([""]);
+    expect(toKeys("")).toEqual(["#0"]);
   });
 });
 
