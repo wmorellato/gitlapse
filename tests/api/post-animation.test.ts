@@ -47,4 +47,11 @@ describe("POST /api/animations", () => {
     const joined = (await readSse(res)).join("\n");
     expect(joined).toContain("event: error");
   });
+
+  it("streams an error event for a malformed JSON body", async () => {
+    const req = new Request("http://x", { method: "POST", body: "not json{" });
+    const res = await POST(req);
+    const joined = (await readSse(res)).join("\n");
+    expect(joined).toContain("event: error");
+  });
 });

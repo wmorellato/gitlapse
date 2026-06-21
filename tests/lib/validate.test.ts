@@ -18,6 +18,9 @@ describe("validateFilePath", () => {
     expect(() => validateFilePath("../etc/passwd")).toThrow(ValidationError);
     expect(() => validateFilePath("/etc/passwd")).toThrow(ValidationError);
   });
+  it("rejects backslash (Windows-style) paths", () => {
+    expect(() => validateFilePath("..\\..\\etc\\passwd")).toThrow(ValidationError);
+  });
 });
 
 describe("validateRepoUrl", () => {

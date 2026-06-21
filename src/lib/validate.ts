@@ -16,9 +16,11 @@ export function validateFilePath(filePath: string): string {
   if (path.posix.isAbsolute(original)) {
     throw new ValidationError("bad_path", "That path isn't allowed.");
   }
-  const trimmed = original.replace(/^\/+/, "");
-  if (trimmed === "") throw new ValidationError("bad_path", "File path is required.");
-  const normalized = path.posix.normalize(trimmed);
+  if (original.includes("\\")) {
+    throw new ValidationError("bad_path", "That path isn't allowed.");
+  }
+  if (original === "") throw new ValidationError("bad_path", "File path is required.");
+  const normalized = path.posix.normalize(original);
   if (normalized.startsWith("..") || normalized.includes("/../") || path.posix.isAbsolute(normalized)) {
     throw new ValidationError("bad_path", "That path isn't allowed.");
   }

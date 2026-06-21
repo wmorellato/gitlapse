@@ -3,8 +3,7 @@ import {
   validateFilePath,
   validateRepoUrl,
   assertPublicHost,
-  validateLocalPath,
-  ValidationError
+  validateLocalPath
 } from "@/lib/validate";
 import { cloneRepo, withTempDir } from "@/lib/git/clone";
 import { getHistory } from "@/lib/git/history";

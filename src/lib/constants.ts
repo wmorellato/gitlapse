@@ -6,3 +6,6 @@ export const ALLOWED_HOSTS = ["github.com", "gitlab.com", "bitbucket.org", "code
 export const BASE_DWELL_MS = 1500;
 export const ALLOW_LOCAL_PATHS = process.env.ALLOW_LOCAL_PATHS === "1";
 export const LOCAL_ROOT = process.env.LOCAL_ROOT ?? "";
+export const MAX_CONCURRENT_EXTRACTIONS = 4;
+export const RATE_LIMIT_WINDOW_MS = 60000;
+export const RATE_LIMIT_MAX = 10;
