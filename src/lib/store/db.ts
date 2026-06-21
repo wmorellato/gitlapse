@@ -1,6 +1,6 @@
 import Database from "better-sqlite3";
 
-let cached: Database.Database | null = null;
+const cache = new Map<string, Database.Database>();
 
 export function ensureSchema(db: Database.Database): Database.Database {
   db.exec(`
@@ -20,9 +20,11 @@ export function ensureSchema(db: Database.Database): Database.Database {
 }
 
 export function getDb(file = process.env.DB_FILE ?? ".data/animations.db"): Database.Database {
-  if (cached) return cached;
-  cached = new Database(file);
-  cached.pragma("journal_mode = WAL");
-  ensureSchema(cached);
-  return cached;
+  const existing = cache.get(file);
+  if (existing) return existing;
+  const db = new Database(file);
+  db.pragma("journal_mode = WAL");
+  ensureSchema(db);
+  cache.set(file, db);
+  return db;
 }
