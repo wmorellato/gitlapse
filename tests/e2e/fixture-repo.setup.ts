@@ -7,5 +7,6 @@ setup("create fixture repo", async () => {
     { path: "demo.txt", content: "hello", message: "add demo" },
     { path: "demo.txt", content: "hello\nworld", message: "extend demo" }
   ]);
+  await fs.mkdir(".data", { recursive: true });
   await fs.writeFile(".data/e2e-repo-path", dir);
 });
