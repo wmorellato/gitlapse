@@ -4,8 +4,8 @@ import { ALLOWED_HOSTS } from "@/lib/constants";
 
 export class ValidationError extends Error {
   code: string;
-  constructor(code: string, message: string) {
-    super(message);
+  constructor(code: string, message: string, options?: { cause?: unknown }) {
+    super(message, options);
     this.code = code;
     this.name = "ValidationError";
   }

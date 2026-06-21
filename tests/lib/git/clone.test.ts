@@ -1,7 +1,9 @@
 import { describe, it, expect, afterAll } from "vitest";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { promises as fs } from "node:fs";
 import { cloneRepo, withTempDir } from "@/lib/git/clone";
+import { ValidationError } from "@/lib/validate";
 import { buildRepo, cleanupRepo } from "../../fixtures/git";
 
 const run = promisify(execFile);
@@ -22,6 +24,26 @@ describe("cloneRepo", () => {
   it("throws on a nonexistent source", async () => {
     await withTempDir(async (dir) => {
       await expect(cloneRepo("/no/such/repo", dir)).rejects.toThrow();
+    });
+  });
+
+  it("removes the temp dir even when the callback throws", async () => {
+    let captured = "";
+    await expect(
+      withTempDir(async (dir) => {
+        captured = dir;
+        throw new Error("boom");
+      })
+    ).rejects.toThrow("boom");
+    await expect(fs.access(captured)).rejects.toThrow();
+  });
+
+  it("throws ValidationError with code clone_failed when the clone fails", async () => {
+    await withTempDir(async (dir) => {
+      await expect(cloneRepo("/no/such/repo", dir)).rejects.toMatchObject({
+        name: "ValidationError",
+        code: "clone_failed",
+      });
     });
   });
 });

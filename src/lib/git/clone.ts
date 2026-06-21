@@ -33,6 +33,6 @@ export async function cloneRepo(source: string, destDir: string): Promise<void> 
       { env: GIT_ENV, timeout: CLONE_TIMEOUT_MS, maxBuffer: 16 * 1024 * 1024 }
     );
   } catch (err) {
-    throw new ValidationError("clone_failed", "Couldn't access that repository — is it public?");
+    throw new ValidationError("clone_failed", "Couldn't access that repository — is it public?", { cause: err });
   }
 }
