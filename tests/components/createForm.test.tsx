@@ -33,4 +33,15 @@ describe("CreateForm", () => {
 
     await waitFor(() => expect(push).toHaveBeenCalledWith("/a/abcdefghijklmnop"));
   });
+
+  it("shows an error and re-enables submit when the request fails", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => { throw new Error("network down"); }));
+    render(<CreateForm />);
+    await userEvent.type(screen.getByLabelText(/repository/i), "https://github.com/a/b");
+    await userEvent.type(screen.getByLabelText(/file path/i), "src/x.ts");
+    const button = screen.getByRole("button", { name: /animate/i });
+    await userEvent.click(button);
+    await waitFor(() => expect(screen.getByRole("alert")).toBeTruthy());
+    expect((button as HTMLButtonElement).disabled).toBe(false);
+  });
 });

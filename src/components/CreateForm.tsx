@@ -29,35 +29,42 @@ export function CreateForm() {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true); setError(null); setStatus("Starting…");
-    const res = await fetch("/api/animations", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ repoInput, filePath })
-    });
-    const reader = res.body!.getReader();
-    const dec = new TextDecoder();
-    let buffer = "";
-    while (true) {
-      const { value, done } = await reader.read();
-      if (done) break;
-      buffer += dec.decode(value, { stream: true });
-      const { events, rest } = parseChunk(buffer);
-      buffer = rest;
-      for (const ev of events) {
-        if (ev.event === "progress") {
-          const p = ev.data as { phase: string; current?: number; total?: number };
-          setStatus(
-            p.phase === "snapshots" ? `Extracting ${p.current}/${p.total}…`
-            : p.phase === "cloning" ? "Cloning…" : "Reading history…"
-          );
-        } else if (ev.event === "done") {
-          router.push(`/a/${(ev.data as { id: string }).id}`);
-          return;
-        } else if (ev.event === "error") {
-          setError((ev.data as { message: string }).message);
-          setBusy(false); setStatus(null);
+    try {
+      const res = await fetch("/api/animations", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ repoInput, filePath })
+      });
+      if (!res.ok || !res.body) throw new Error("Request failed");
+      const reader = res.body.getReader();
+      const dec = new TextDecoder();
+      let buffer = "";
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += dec.decode(value, { stream: true });
+        const { events, rest } = parseChunk(buffer);
+        buffer = rest;
+        for (const ev of events) {
+          if (ev.event === "progress") {
+            const p = ev.data as { phase: string; current?: number; total?: number };
+            setStatus(
+              p.phase === "snapshots" ? `Extracting ${p.current}/${p.total}…`
+              : p.phase === "cloning" ? "Cloning…" : "Reading history…"
+            );
+          } else if (ev.event === "done") {
+            router.push(`/a/${(ev.data as { id: string }).id}`);
+            return;
+          } else if (ev.event === "error") {
+            setError((ev.data as { message: string }).message);
+            setBusy(false); setStatus(null);
+          }
         }
       }
+    } catch (err) {
+      setError("Something went wrong. Please try again.");
+      setBusy(false);
+      setStatus(null);
     }
   }
 
