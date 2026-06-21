@@ -105,7 +105,7 @@ tests/
     "@testing-library/react": "^16.1.0",
     "@testing-library/user-event": "^14.5.2",
     "jsdom": "^25.0.1",
-    "@playwright/test": "^1.49.0"
+    "@playwright/test": "~1.60.0"
   }
 }
 ```

@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git rev-parse *)",
+      "Bash(cat \"$\\(git rev-parse --git-path sdd\\)/progress.md\")",
+      "Read(//home/wes/.claude/plugins/cache/claude-plugins-official/superpowers/6.0.0/skills/subagent-driven-development/scripts/**)",
+      "Bash(npm --version)",
+      "Bash(make --version)",
+      "Bash(g++ --version)",
+      "Bash(npm install *)",
+      "Bash(npm view *)",
+      "Bash(npm cache *)",
+      "Bash(npm config *)",
+      "Bash(echo \"---EXIT:$?---\")",
+      "Bash(node -e \"require\\('better-sqlite3'\\); console.log\\('better-sqlite3 loaded OK'\\)\")",
+      "Bash(npm test *)",
+      "Bash(npm run *)"
+    ]
+  }
+}
