@@ -24,10 +24,10 @@ export async function buildRepo(commits: FixtureCommit[]): Promise<string> {
   const dir = await fs.mkdtemp(path.join(os.tmpdir(), "fix-repo-"));
   await run("git", ["-C", dir, "init", "-q", "-b", "main"], { env: ENV });
   for (const c of commits) {
+    await fs.mkdir(path.dirname(path.join(dir, c.path)), { recursive: true });
     if (c.rename) {
       await run("git", ["-C", dir, "mv", c.rename.from, c.path], { env: ENV });
     }
-    await fs.mkdir(path.dirname(path.join(dir, c.path)), { recursive: true });
     await fs.writeFile(path.join(dir, c.path), c.content);
     await run("git", ["-C", dir, "add", "-A"], { env: ENV });
     await run("git", ["-C", dir, "commit", "-q", "-m", c.message], { env: ENV });
