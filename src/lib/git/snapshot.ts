@@ -18,7 +18,11 @@ export function getFileAt(repoDir: string, sha: string, filePath: string): Promi
         if (err) {
           const e = err as NodeJS.ErrnoException;
           // Output exceeded maxBuffer => the file is larger than the cap.
-          if (e.code === "ERR_CHILD_PROCESS_STDOUT_MAXBUFFER" || /maxBuffer/i.test(String(err.message))) {
+          if (
+            e.code === "ERR_CHILD_PROCESS_STDIO_MAXBUFFER" ||
+            e.code === "ERR_CHILD_PROCESS_STDOUT_MAXBUFFER" ||
+            /maxBuffer/i.test(String(err.message))
+          ) {
             reject(new ValidationError("too_large", "That file is too large to animate (max 256 KB)."));
             return;
           }
