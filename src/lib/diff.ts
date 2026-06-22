@@ -44,7 +44,7 @@ export function buildTransition(prev: string, next: string): TransitionLine[] {
   const emitNext = (text: string, type: "context" | "add") => {
     const n = seenNext.get(text) ?? 0;
     seenNext.set(text, n + 1);
-    out.push({ key: `${text} ${n}`, text, type });
+    out.push({ key: `n ${text} ${n}`, text, type });
   };
   const emitRemove = (text: string) => {
     const n = seenRemoved.get(text) ?? 0;
