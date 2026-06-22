@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useReducedMotion } from "motion/react";
 import { usePlayer } from "@/components/usePlayer";
 import { CodeViewport } from "@/components/CodeViewport";
 import { CommitInfo } from "@/components/CommitInfo";
@@ -16,7 +17,17 @@ export function Player({ payload }: { payload: AnimationPayload }) {
   const prev = player.index > 0 ? commits[player.index - 1].content : null;
 
   const [scrubbing, setScrubbing] = useState(false);
+  const reduced = useReducedMotion();
   const dwellMs = BASE_DWELL_MS / player.speed;
+
+  // Arrival payoff: a shared link should play itself. Start once on mount so a
+  // cold viewer sees the morph immediately — unless they prefer reduced motion,
+  // in which case they land on the first commit and can step through manually.
+  useEffect(() => {
+    if (!reduced && commits.length > 1) player.play();
+    // Autoplay only on initial mount; reduced/play are read at that point.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSeek = (i: number) => {
     setScrubbing(true);

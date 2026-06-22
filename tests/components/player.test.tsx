@@ -25,4 +25,17 @@ describe("Player", () => {
     expect(screen.getByText("1 / 2")).toBeTruthy();
     expect(screen.getByRole("slider", { name: /timeline/i })).toBeTruthy();
   });
+
+  it("autoplays on mount so a shared link shows the morph immediately", () => {
+    // jsdom reports no reduced-motion preference, so playback starts on mount
+    // and the play control flips to Pause.
+    render(<Player payload={payload} />);
+    expect(screen.getByRole("button", { name: /pause/i })).toBeTruthy();
+  });
+
+  it("does not autoplay a single-commit animation", () => {
+    const single: AnimationPayload = { ...payload, commits: [payload.commits[0]] };
+    render(<Player payload={single} />);
+    expect(screen.getByRole("button", { name: /play/i })).toBeTruthy();
+  });
 });
