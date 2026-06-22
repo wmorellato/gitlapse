@@ -1,4 +1,5 @@
 "use client";
+import styles from "./Timeline.module.css";
 
 export function Timeline({ index, count, onSeek }: { index: number; count: number; onSeek: (i: number) => void }) {
   return (
@@ -9,7 +10,7 @@ export function Timeline({ index, count, onSeek }: { index: number; count: numbe
       max={Math.max(0, count - 1)}
       value={index}
       onChange={(e) => onSeek(Number(e.target.value))}
-      style={{ width: "100%" }}
+      className={styles.range}
     />
   );
 }
