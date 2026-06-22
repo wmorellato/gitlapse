@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { toKeys, toRenderLines } from "@/lib/diff";
+import { toKeys, toRenderLines, buildTransition } from "@/lib/diff";
 
 describe("toKeys", () => {
   it("disambiguates duplicate lines by occurrence", () => {
@@ -35,5 +35,41 @@ describe("toRenderLines", () => {
     const next = toRenderLines("a\n\nb\nc", "a\n\nb");
     expect(next[1].key).toBe(prev[1].key);
     expect(next[1].change).toBe("context");
+  });
+});
+
+describe("buildTransition", () => {
+  it("marks added, removed, and context lines in order", () => {
+    const t = buildTransition("a\nb\nc", "a\nx\nc");
+    expect(t.map((l) => [l.type, l.text])).toEqual([
+      ["context", "a"],
+      ["remove", "b"],
+      ["add", "x"],
+      ["context", "c"]
+    ]);
+  });
+
+  it("returns all context for identical input", () => {
+    const t = buildTransition("a\nb", "a\nb");
+    expect(t.every((l) => l.type === "context")).toBe(true);
+    expect(t.map((l) => l.text)).toEqual(["a", "b"]);
+  });
+
+  it("gives context/add lines keys matching their occurrence in next", () => {
+    const t = buildTransition("a", "a\nb");
+    const aLine = t.find((l) => l.text === "a")!;
+    const bLine = t.find((l) => l.text === "b")!;
+    expect(aLine).toMatchObject({ type: "context", key: "a 0" });
+    expect(bLine).toMatchObject({ type: "add", key: "b 0" });
+  });
+
+  it("keeps removed-line keys in a separate namespace", () => {
+    const t = buildTransition("gone", "kept");
+    expect(t.find((l) => l.type === "remove")!.key.startsWith("r ")).toBe(true);
+  });
+
+  it("handles all-added and all-removed", () => {
+    expect(buildTransition("", "x\ny").filter((l) => l.type === "add")).toHaveLength(2);
+    expect(buildTransition("x\ny", "").filter((l) => l.type === "remove")).toHaveLength(2);
   });
 });
