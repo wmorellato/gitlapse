@@ -1,10 +1,13 @@
 "use client";
+import { useEffect, useState } from "react";
 import { usePlayer } from "@/components/usePlayer";
 import { CodeViewport } from "@/components/CodeViewport";
 import { CommitInfo } from "@/components/CommitInfo";
 import { Controls } from "@/components/Controls";
 import { Timeline } from "@/components/Timeline";
+import { BASE_DWELL_MS } from "@/lib/constants";
 import type { AnimationPayload } from "@/lib/types";
+import styles from "./Player.module.css";
 
 export function Player({ payload }: { payload: AnimationPayload }) {
   const { commits } = payload;
@@ -12,18 +15,43 @@ export function Player({ payload }: { payload: AnimationPayload }) {
   const current = commits[player.index];
   const prev = player.index > 0 ? commits[player.index - 1].content : null;
 
+  const [scrubbing, setScrubbing] = useState(false);
+  const dwellMs = BASE_DWELL_MS / player.speed;
+
+  const handleSeek = (i: number) => {
+    setScrubbing(true);
+    player.seek(i);
+  };
+  // Clear the scrubbing flag shortly after the index settles, so play/next/prev animate.
+  useEffect(() => {
+    if (!scrubbing) return;
+    const t = setTimeout(() => setScrubbing(false), 80);
+    return () => clearTimeout(t);
+  }, [player.index, scrubbing]);
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 12, height: "100vh", padding: 16, boxSizing: "border-box" }}>
-      <header style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
-        <span>{payload.repo.displayName} · {payload.filePath}{payload.truncated ? " · (truncated)" : ""}</span>
-        <a href="/create">Create your own</a>
+    <div className={styles.shell}>
+      <header className={styles.header}>
+        <span className={styles.source}>
+          {payload.repo.displayName} · {payload.filePath}
+          {payload.truncated && <span className={styles.pill}>truncated</span>}
+        </span>
+        <a className={styles.createLink} href="/create">Create your own</a>
       </header>
       <CommitInfo commit={current} index={player.index} count={commits.length} />
-      <div style={{ flex: 1, minHeight: 0, border: "1px solid #ddd", borderRadius: 6 }}>
-        <CodeViewport content={current.content} prevContent={prev} />
+      <div className={styles.card}>
+        <CodeViewport
+          content={current.content}
+          prevContent={prev}
+          language={payload.language}
+          dwellMs={dwellMs}
+          scrubbing={scrubbing}
+        />
       </div>
-      <Timeline index={player.index} count={commits.length} onSeek={player.seek} />
-      <Controls player={player} />
+      <div className={styles.footer}>
+        <Timeline index={player.index} count={commits.length} onSeek={handleSeek} />
+        <Controls player={player} />
+      </div>
     </div>
   );
 }

@@ -1,7 +1,11 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeAll, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { Player } from "@/components/Player";
 import type { AnimationPayload } from "@/lib/types";
+
+beforeAll(() => {
+  Element.prototype.scrollIntoView = vi.fn();
+});
 
 const payload: AnimationPayload = {
   version: 1, repo: { url: null, displayName: "a/b" }, filePath: "a.txt",
