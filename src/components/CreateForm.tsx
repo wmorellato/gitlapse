@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import styles from "./CreateForm.module.css";
 
 interface SseEvent { event: string; data: unknown }
 
@@ -69,21 +70,24 @@ export function CreateForm() {
   }
 
   return (
-    <main style={{ maxWidth: 560, margin: "10vh auto", padding: 16 }}>
-      <h1>Animate a file's history</h1>
-      <form onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        <label>Repository URL
-          <input value={repoInput} onChange={(e) => setRepoInput(e.target.value)}
-            placeholder="https://github.com/owner/repo" required style={{ width: "100%" }} />
-        </label>
-        <label>File path
-          <input value={filePath} onChange={(e) => setFilePath(e.target.value)}
-            placeholder="src/index.ts" required style={{ width: "100%" }} />
-        </label>
-        <button type="submit" disabled={busy}>Animate</button>
-      </form>
-      {status && <p>{status}</p>}
-      {error && <p role="alert" style={{ color: "#b00" }}>{error}</p>}
+    <main className={styles.page}>
+      <div className={styles.card}>
+        <h1 className={styles.title}>Commit Animation</h1>
+        <p className={styles.subtitle}>Watch a file evolve across its history.</p>
+        <form onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <label className={styles.field}>Repository URL
+            <input className={styles.input} value={repoInput} onChange={(e) => setRepoInput(e.target.value)}
+              placeholder="https://github.com/owner/repo" required />
+          </label>
+          <label className={styles.field}>File path
+            <input className={styles.input} value={filePath} onChange={(e) => setFilePath(e.target.value)}
+              placeholder="src/index.ts" required />
+          </label>
+          <button className={styles.button} type="submit" disabled={busy}>Animate</button>
+        </form>
+        {status && <p className={styles.status}>{status}</p>}
+        {error && <p role="alert" className={styles.error}>{error}</p>}
+      </div>
     </main>
   );
 }
