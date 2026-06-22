@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll, vi } from "vitest";
 import { render } from "@testing-library/react";
+import { MotionConfig } from "motion/react";
 import { CodeViewport } from "@/components/CodeViewport";
 
 beforeAll(() => {
@@ -25,5 +26,15 @@ describe("CodeViewport", () => {
       <CodeViewport content={"const x = 1"} prevContent={null} language="typescript" dwellMs={1500} scrubbing={false} />
     );
     expect(code.container.querySelector("[data-gutter]")).not.toBeNull();
+  });
+
+  it("renders without a beat under reduced motion (still shows the content)", () => {
+    const { container } = render(
+      <MotionConfig reducedMotion="always">
+        <CodeViewport content={"line one\nline two"} prevContent={"line one"} language="plaintext" dwellMs={1500} scrubbing={false} />
+      </MotionConfig>
+    );
+    // Final content is present; no crash from the reduced-motion path.
+    expect(container.querySelectorAll("[data-line]").length).toBeGreaterThanOrEqual(2);
   });
 });
