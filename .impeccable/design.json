@@ -1,0 +1,157 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-22T00:00:00Z",
+  "title": "Design System: Commit Animation",
+  "extensions": {
+    "colorMeta": {
+      "ember": {
+        "role": "primary",
+        "displayName": "Ember",
+        "canonical": "oklch(0.53 0.16 41)",
+        "tonalRamp": ["#431407", "#7c2d12", "#9a3412", "#c2410c", "#ea580c", "#f97316", "#fdba74", "#ffedd5"]
+      },
+      "bg": {
+        "role": "neutral",
+        "displayName": "Canvas",
+        "canonical": "#f7f8fa",
+        "tonalRamp": ["#0a0c0f", "#1c2024", "#374151", "#4b5563", "#6b7280", "#9ca3af", "#e5e7eb", "#f7f8fa"]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Surface",
+        "canonical": "#ffffff",
+        "tonalRamp": ["#0a0c0f", "#1c2024", "#374151", "#6b7280", "#9ca3af", "#d1d5db", "#f7f8fa", "#ffffff"]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#1c2024",
+        "tonalRamp": ["#0a0c0f", "#1c2024", "#374151", "#4b5563", "#6b7280", "#9ca3af", "#d1d5db", "#e5e7eb"]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted Gray",
+        "canonical": "#6b7280",
+        "tonalRamp": ["#111317", "#1f2937", "#374151", "#4b5563", "#6b7280", "#9ca3af", "#d1d5db", "#f3f4f6"]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "#e5e7eb",
+        "tonalRamp": ["#111317", "#374151", "#6b7280", "#9ca3af", "#d1d5db", "#e5e7eb", "#f1f3f5", "#f7f8fa"]
+      },
+      "add-wash": {
+        "role": "tertiary",
+        "displayName": "Add Wash",
+        "canonical": "rgba(34,197,94,0.14)",
+        "tonalRamp": ["#14532d", "#166534", "#15803d", "#16a34a", "#22c55e", "#4ade80", "#86efac", "#dcfce7"]
+      },
+      "remove-wash": {
+        "role": "tertiary",
+        "displayName": "Remove Wash",
+        "canonical": "rgba(244,63,94,0.12)",
+        "tonalRamp": ["#881337", "#9f1239", "#be123c", "#e11d48", "#f43f5e", "#fb7185", "#fda4af", "#ffe4e6"]
+      }
+    },
+    "typographyMeta": {
+      "title": { "displayName": "Title", "purpose": "The create-form heading; the largest type in the app (~22px). No oversized hero." },
+      "body": { "displayName": "Body", "purpose": "Prose/markdown viewport content in proportional sans, capped to a 72ch measure." },
+      "code": { "displayName": "Code", "purpose": "Monospace viewport content for code files; preserves column alignment." },
+      "label": { "displayName": "Label / Meta", "purpose": "Controls, author, timestamps, status — quiet 13px metadata." }
+    },
+    "shadows": [
+      { "name": "ambient-card", "value": "0 1px 2px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.06)", "purpose": "The single elevation token. Lifts the content card (viewport, create form) one soft step off the canvas. Never on buttons, inputs, or rows." }
+    ],
+    "motion": [
+      { "name": "wash-fade", "value": "background-color 0.35s ease", "purpose": "Fades the add/remove anticipation washes in and out on viewport rows." },
+      { "name": "morph", "value": "height/opacity 0.35s ease-out", "purpose": "Added lines grow in, removed lines collapse out, context lines FLIP to new positions." },
+      { "name": "beat", "value": "clamp(150ms, dwellMs * 0.4, 700ms)", "purpose": "Duration of each morph phase (anticipate, apply); scales with playback speed." },
+      { "name": "reduced", "value": "instant swap", "purpose": "prefers-reduced-motion: no beat, no auto-scroll, no animated height — the new state appears immediately." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The 'Animate' action in the create card — the one ember-filled element on screen.",
+      "html": "<button class=\"ds-btn-primary\">Animate</button>",
+      "css": ".ds-btn-primary{height:42px;padding:0 16px;border:none;border-radius:10px;background:#c2410c;color:#fff;font-family:ui-sans-serif,system-ui,sans-serif;font-weight:600;cursor:pointer;transition:background .2s,transform .2s}.ds-btn-primary:hover{background:#9a3412;transform:translateY(-1px)}.ds-btn-primary:focus-visible{outline:2px solid #c2410c;outline-offset:2px}.ds-btn-primary:disabled{opacity:.6;cursor:default;transform:none}"
+    },
+    {
+      "name": "Control Button",
+      "kind": "button",
+      "refersTo": "control-button",
+      "description": "Square 36px playback control (prev / play-pause / next); border turns ember on hover.",
+      "html": "<button class=\"ds-ctrl\" aria-label=\"Play\">▶</button>",
+      "css": ".ds-ctrl{width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #e5e7eb;border-radius:10px;background:#fff;color:#1c2024;cursor:pointer;transition:border-color .15s}.ds-ctrl:hover{border-color:#c2410c}.ds-ctrl:active{transform:translateY(1px)}.ds-ctrl:focus-visible{outline:2px solid #c2410c;outline-offset:2px}"
+    },
+    {
+      "name": "Input Field",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Labeled text input in the create card; inset canvas fill inside the white card.",
+      "html": "<label class=\"ds-field\">Repository URL<input class=\"ds-input\" placeholder=\"https://github.com/owner/repo\"></label>",
+      "css": ".ds-field{display:flex;flex-direction:column;gap:4px;font-family:ui-sans-serif,system-ui,sans-serif;font-size:14px;color:#1c2024}.ds-input{height:40px;padding:0 12px;border:1px solid #e5e7eb;border-radius:10px;background:#f7f8fa;color:#1c2024;font:inherit}.ds-input::placeholder{color:#6b7280}.ds-input:focus-visible{outline:2px solid #c2410c;outline-offset:2px}"
+    },
+    {
+      "name": "Timeline Scrubber",
+      "kind": "custom",
+      "refersTo": "timeline",
+      "description": "Native range input across all commits: border-gray track, ember fill, white-ringed thumb. Keyboard-operable.",
+      "html": "<input type=\"range\" class=\"ds-range\" aria-label=\"Timeline\" min=\"0\" max=\"10\" value=\"4\">",
+      "css": ".ds-range{width:100%;appearance:none;-webkit-appearance:none;height:6px;border-radius:999px;background:linear-gradient(#c2410c,#c2410c) 0/40% 100% no-repeat,#e5e7eb;outline:none}.ds-range:focus-visible{outline:2px solid #c2410c;outline-offset:4px}.ds-range::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#c2410c;border:2px solid #fff;box-shadow:0 1px 2px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.06);cursor:pointer}.ds-range::-moz-range-thumb{width:16px;height:16px;border:2px solid #fff;border-radius:50%;background:#c2410c;cursor:pointer}"
+    },
+    {
+      "name": "Code Viewport Row",
+      "kind": "custom",
+      "refersTo": "viewport-row",
+      "description": "The signature surface: wrapping rows mid-morph during the anticipate phase — context, an added line (green wash), a removed line (rose wash).",
+      "html": "<div class=\"ds-viewport\" data-phase=\"anticipate\"><div class=\"ds-row\" data-type=\"context\"><span class=\"ds-num\">1</span><span>The quiet theater of the replay.</span></div><div class=\"ds-row\" data-type=\"add\"><span class=\"ds-num\">2</span><span>Added lines glow, then settle.</span></div><div class=\"ds-row\" data-type=\"remove\"><span class=\"ds-num\"></span><span>Removed lines glow, then collapse.</span></div></div>",
+      "css": ".ds-viewport{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;line-height:1.6;background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:12px 16px}.ds-row{display:flex;gap:12px;white-space:pre-wrap;overflow-wrap:anywhere;border-radius:6px;transition:background-color .35s ease}.ds-viewport[data-phase=\"anticipate\"] .ds-row[data-type=\"add\"]{background-color:rgba(34,197,94,.14)}.ds-row[data-type=\"remove\"]{background-color:rgba(244,63,94,.12)}.ds-num{flex:0 0 auto;min-width:2.5ch;text-align:right;color:#6b7280;user-select:none}"
+    },
+    {
+      "name": "Commit SHA Chip",
+      "kind": "chip",
+      "refersTo": "commit-info",
+      "description": "Monospace short-SHA chip in the commit-info row above the viewport.",
+      "html": "<code class=\"ds-sha\">c40c235</code>",
+      "css": ".ds-sha{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:1px 8px;color:#1c2024}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Replay",
+    "overview": "The interface is a quiet theater built around one performance: a file rewriting itself, commit by commit. Everything that isn't the content is seating — present, comfortable, and deliberately unremarkable. The eye is pulled to the playback, never to the chrome. When a change is about to happen, the affected lines glow in a soft wash for a beat, then added lines grow in and removed lines collapse out while everything else glides to its new place. That anticipation-then-resolution is the delight, and it comes entirely from craft, not decoration. The system rejects the cold enterprise dashboard and the generic AI-SaaS landing template, and rejects flashy motion — no bounce, no elastic, no effect that doesn't clarify what changed.",
+    "keyCharacteristics": [
+      "Content-first: chrome recedes so the morph is the only thing that performs.",
+      "One warm accent, used sparingly, on an otherwise neutral cool-white canvas.",
+      "Flat by default; depth appears only on the one surface that holds content.",
+      "Motion is semantic — it explains the diff, never just dresses it up.",
+      "Reading comfort (wrapping, measure, contrast) outranks visual flourish."
+    ],
+    "rules": [
+      { "name": "The One Voice Rule", "body": "Ember is the only saturated color in the UI and appears on ≤10% of any screen. Its rarity is what makes 'this is the action' unmistakable. Never use it as a large background fill or as decoration.", "section": "colors" },
+      { "name": "The Wash-Is-A-Verb Rule", "body": "The green/rose washes are transient — they mark a line about to change, never a permanent state, and are always paired with motion and position so meaning never depends on color alone.", "section": "colors" },
+      { "name": "The Adaptive-Type Rule", "body": "Content font is chosen by file type: markdown/plaintext render in proportional sans (no line numbers); all code renders in monospace (with line numbers). Never force prose into monospace.", "section": "typography" },
+      { "name": "The No-Hero Rule", "body": "Nothing exceeds ~22px. This is a tool and a player, not a landing page; there is no display headline to shout with.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "Surfaces are flat and bordered at rest. The single ambient shadow exists only to separate the content card from the canvas. If you're reaching for a second shadow value, use a border instead.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep Ember (#c2410c) for interaction only — buttons, links, the timeline fill, focus rings — on ≤10% of any screen (The One Voice Rule).",
+      "Do choose the content font by file type: proportional sans for prose/markdown, monospace for code (The Adaptive-Type Rule).",
+      "Do convey add/remove with motion and position as well as the washes, so color is never the only signal.",
+      "Do keep body and muted text at AA: body/placeholder ≥4.5:1, large text ≥3:1. Muted gray (#6b7280) is the floor, not lighter.",
+      "Do draw structure with 1px hairline borders; reserve the single ambient shadow for the content card (The Flat-By-Default Rule).",
+      "Do give every animation a prefers-reduced-motion path — the morph degrades to an instant swap with no beat or auto-scroll."
+    ],
+    "donts": [
+      "Don't make it feel corporate or sterile — no cold, over-formal enterprise-dashboard chrome. Warmth comes from Ember + reading type.",
+      "Don't use flashy or gimmicky motion (bounce, elastic, decorative effects). Motion must explain the diff.",
+      "Don't ship the generic AI-SaaS template: no cream/sand body background, no tiny tracked-uppercase eyebrows above sections, no hero-metric block, no endless identical card grids.",
+      "Don't use loud color, neon, or gradients; the change washes stay soft and the accent stays singular.",
+      "Don't use a border-left/border-right colored stripe as an accent; use full hairline borders or a leading chip/number.",
+      "Don't use gradient text (background-clip: text) or decorative glassmorphism.",
+      "Don't introduce a second saturated color or a display headline larger than ~22px (The No-Hero Rule)."
+    ]
+  }
+}
