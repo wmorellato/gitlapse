@@ -1,10 +1,24 @@
-import Database from "better-sqlite3";
+import { createRequire } from "node:module";
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
+import type DatabaseNamespace from "better-sqlite3";
 
-const cache = new Map<string, Database.Database>();
+type DB = DatabaseNamespace.Database;
 
-export function ensureSchema(db: Database.Database): Database.Database {
+// better-sqlite3 is a native addon. Importing it at module-eval time means every
+// module that touches the store loads the binary up front — which crashes Next
+// build workers during page-data collection and adds serverless cold-start cost.
+// Defer the require until a database is actually opened (request time).
+const require = createRequire(import.meta.url);
+let DatabaseCtor: typeof DatabaseNamespace | null = null;
+function loadDatabase(): typeof DatabaseNamespace {
+  if (!DatabaseCtor) DatabaseCtor = require("better-sqlite3") as typeof DatabaseNamespace;
+  return DatabaseCtor;
+}
+
+const cache = new Map<string, DB>();
+
+export function ensureSchema(db: DB): DB {
   db.exec(`
     CREATE TABLE IF NOT EXISTS animations (
       id TEXT PRIMARY KEY,
@@ -21,10 +35,11 @@ export function ensureSchema(db: Database.Database): Database.Database {
   return db;
 }
 
-export function getDb(file = process.env.DB_FILE ?? ".data/animations.db"): Database.Database {
+export function getDb(file = process.env.DB_FILE ?? ".data/animations.db"): DB {
   const existing = cache.get(file);
   if (existing) return existing;
   if (file !== ":memory:") mkdirSync(dirname(file), { recursive: true });
+  const Database = loadDatabase();
   const db = new Database(file);
   db.pragma("journal_mode = WAL");
   ensureSchema(db);
