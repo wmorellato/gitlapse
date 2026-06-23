@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, afterEach, vi } from "vitest";
-import { render, screen, act } from "@testing-library/react";
+import { render, screen, act, fireEvent } from "@testing-library/react";
 import { Player } from "@/components/Player";
 import type { AnimationPayload } from "@/lib/types";
 
@@ -51,6 +51,33 @@ describe("Player", () => {
       act(() => { vi.advanceTimersByTime(2500); });
       // Both the controls button and the viewport overlay expose "Replay".
       expect(screen.getAllByRole("button", { name: /replay/i }).length).toBeGreaterThan(0);
+    });
+  });
+
+  describe("keyboard control", () => {
+    it("toggles playback with the space bar", () => {
+      render(<Player payload={payload} />);
+      // jsdom autoplays, so it starts on Pause.
+      expect(screen.getByRole("button", { name: /pause/i })).toBeTruthy();
+      act(() => { fireEvent.keyDown(document, { key: " " }); });
+      expect(screen.getByRole("button", { name: /play/i })).toBeTruthy();
+    });
+
+    it("steps commits with the arrow keys", () => {
+      render(<Player payload={payload} />);
+      expect(screen.getByText("1 / 2")).toBeTruthy();
+      act(() => { fireEvent.keyDown(document, { key: "ArrowRight" }); });
+      expect(screen.getByText("2 / 2")).toBeTruthy();
+      act(() => { fireEvent.keyDown(document, { key: "ArrowLeft" }); });
+      expect(screen.getByText("1 / 2")).toBeTruthy();
+    });
+
+    it("ignores shortcuts originating from a form control", () => {
+      render(<Player payload={payload} />);
+      const slider = screen.getByRole("slider", { name: /timeline/i });
+      act(() => { fireEvent.keyDown(slider, { key: " " }); });
+      // Space on the range must not hijack — playback keeps running.
+      expect(screen.getByRole("button", { name: /pause/i })).toBeTruthy();
     });
   });
 });

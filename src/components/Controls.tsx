@@ -10,15 +10,16 @@ export function Controls({ player }: { player: PlayerApi }) {
   const showReplay = player.atEnd && !player.isPlaying;
   return (
     <div className={styles.bar}>
-      <button onClick={player.prev} aria-label="Previous commit" className={styles.btn}>⏮</button>
+      <button onClick={player.prev} aria-label="Previous commit" aria-keyshortcuts="ArrowLeft" className={styles.btn}>⏮</button>
       <button
         onClick={showReplay ? player.replay : player.toggle}
         aria-label={showReplay ? "Replay" : player.isPlaying ? "Pause" : "Play"}
+        aria-keyshortcuts="Space"
         className={styles.btn}
       >
         {showReplay ? "↻" : player.isPlaying ? "⏸" : "▶"}
       </button>
-      <button onClick={player.next} aria-label="Next commit" className={styles.btn}>⏭</button>
+      <button onClick={player.next} aria-label="Next commit" aria-keyshortcuts="ArrowRight" className={styles.btn}>⏭</button>
       <div className={styles.spacer}></div>
       <label className={styles.label}>
         Speed

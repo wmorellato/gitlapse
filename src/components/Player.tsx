@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { usePlayer } from "@/components/usePlayer";
+import { usePlayerKeys } from "@/components/usePlayerKeys";
 import { CodeViewport } from "@/components/CodeViewport";
 import { CommitInfo } from "@/components/CommitInfo";
 import { Controls } from "@/components/Controls";
@@ -22,6 +23,8 @@ export function Player({ payload }: { payload: AnimationPayload }) {
   const holdMs = ANTICIPATE_HOLD_MS / player.speed;
   // The performance is over: invite a re-watch without auto-looping (calm, not flashy).
   const finished = player.atEnd && !player.isPlaying;
+  // Space / arrows / Home-End for repeat and power viewers.
+  usePlayerKeys(player, commits.length);
 
   // Arrival payoff: a shared link should play itself. Start once on mount so a
   // cold viewer sees the morph immediately — unless they prefer reduced motion,

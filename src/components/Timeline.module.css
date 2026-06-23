@@ -1,4 +1,29 @@
+.wrap {
+  position: relative;
+  padding-top: 7px;
+}
+/* A subtle scale of per-commit ticks so the length of the history reads at a
+   glance. Inset by half the thumb width so ticks line up with thumb travel. */
+.ticks {
+  position: absolute;
+  top: 0;
+  left: 8px;
+  right: 8px;
+  height: 4px;
+  pointer-events: none;
+}
+.tick {
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: 4px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: var(--text-muted);
+  opacity: 0.45;
+}
 .range {
+  display: block;
   width: 100%;
   appearance: none;
   -webkit-appearance: none;
