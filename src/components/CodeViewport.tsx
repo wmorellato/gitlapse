@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useRef } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { useMorphPhase } from "@/components/useMorphPhase";
+import { AnimatePresence, motion } from "motion/react";
+import type { MorphPhase } from "@/components/useMorphPhase";
+import type { TransitionLine } from "@/lib/diff";
 import { getPresentation } from "@/lib/presentation";
 import styles from "./CodeViewport.module.css";
 
@@ -40,17 +41,15 @@ function rollScrollTo(el: HTMLElement, top: number, durationMs: number): () => v
 }
 
 interface CodeViewportProps {
-  content: string;
-  prevContent: string | null;
+  lines: TransitionLine[];
+  phase: MorphPhase;
+  firstChangeKey: string | null;
+  reduced: boolean;
   language: string;
-  dwellMs: number;
   holdMs: number;
-  scrubbing: boolean;
 }
 
-export function CodeViewport({ content, prevContent, language, dwellMs, holdMs, scrubbing }: CodeViewportProps) {
-  const reduced = useReducedMotion() ?? false;
-  const { phase, lines, firstChangeKey } = useMorphPhase(content, prevContent, { dwellMs, holdMs, reduced, scrubbing });
+export function CodeViewport({ lines, phase, firstChangeKey, reduced, language, holdMs }: CodeViewportProps) {
   const pres = getPresentation(language);
   const viewport = useRef<HTMLDivElement>(null);
 

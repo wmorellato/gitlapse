@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { usePlayer } from "@/components/usePlayer";
 import { usePlayerKeys } from "@/components/usePlayerKeys";
+import { useMorphPhase } from "@/components/useMorphPhase";
 import { CodeViewport } from "@/components/CodeViewport";
 import { CommitInfo } from "@/components/CommitInfo";
 import { Controls } from "@/components/Controls";
@@ -18,9 +19,10 @@ export function Player({ payload }: { payload: AnimationPayload }) {
   const prev = player.index > 0 ? commits[player.index - 1].content : null;
 
   const [scrubbing, setScrubbing] = useState(false);
-  const reduced = useReducedMotion();
+  const reduced = useReducedMotion() ?? false;
   const dwellMs = BASE_DWELL_MS / player.speed;
   const holdMs = ANTICIPATE_HOLD_MS / player.speed;
+  const morph = useMorphPhase(current.content, prev, { dwellMs, holdMs, reduced, scrubbing });
   // The performance is over: invite a re-watch without auto-looping (calm, not flashy).
   const finished = player.atEnd && !player.isPlaying;
   // Space / arrows / Home-End for repeat and power viewers.
@@ -62,12 +64,12 @@ export function Player({ payload }: { payload: AnimationPayload }) {
       <CommitInfo commit={current} index={player.index} count={commits.length} />
       <div className={styles.card}>
         <CodeViewport
-          content={current.content}
-          prevContent={prev}
+          lines={morph.lines}
+          phase={morph.phase}
+          firstChangeKey={morph.firstChangeKey}
+          reduced={reduced}
           language={payload.language}
-          dwellMs={dwellMs}
           holdMs={holdMs}
-          scrubbing={scrubbing}
         />
         <AnimatePresence>
           {finished && (
