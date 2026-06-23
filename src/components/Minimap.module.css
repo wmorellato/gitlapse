@@ -1,4 +1,5 @@
 .minimap {
+  position: relative; /* contain popLayout's absolutely-positioned exit rows */
   flex: 0 0 56px;
   display: flex;
   flex-direction: column;
