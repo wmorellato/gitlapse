@@ -1,12 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useReducedMotion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { usePlayer } from "@/components/usePlayer";
 import { CodeViewport } from "@/components/CodeViewport";
 import { CommitInfo } from "@/components/CommitInfo";
 import { Controls } from "@/components/Controls";
 import { Timeline } from "@/components/Timeline";
-import { BASE_DWELL_MS } from "@/lib/constants";
+import { BASE_DWELL_MS, ANTICIPATE_HOLD_MS } from "@/lib/constants";
 import type { AnimationPayload } from "@/lib/types";
 import styles from "./Player.module.css";
 
@@ -19,6 +19,9 @@ export function Player({ payload }: { payload: AnimationPayload }) {
   const [scrubbing, setScrubbing] = useState(false);
   const reduced = useReducedMotion();
   const dwellMs = BASE_DWELL_MS / player.speed;
+  const holdMs = ANTICIPATE_HOLD_MS / player.speed;
+  // The performance is over: invite a re-watch without auto-looping (calm, not flashy).
+  const finished = player.atEnd && !player.isPlaying;
 
   // Arrival payoff: a shared link should play itself. Start once on mount so a
   // cold viewer sees the morph immediately — unless they prefer reduced motion,
@@ -56,8 +59,25 @@ export function Player({ payload }: { payload: AnimationPayload }) {
           prevContent={prev}
           language={payload.language}
           dwellMs={dwellMs}
+          holdMs={holdMs}
           scrubbing={scrubbing}
         />
+        <AnimatePresence>
+          {finished && (
+            <motion.div
+              className={styles.replayLayer}
+              initial={reduced ? { opacity: 0 } : { opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={reduced ? { opacity: 0 } : { opacity: 0, y: 10 }}
+              transition={{ duration: reduced ? 0.12 : 0.24, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <button className={styles.replayButton} onClick={player.replay}>
+                <span className={styles.replayIcon} aria-hidden>↻</span>
+                Replay
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
       <div className={styles.footer}>
         <Timeline index={player.index} count={commits.length} onSeek={handleSeek} />

@@ -24,6 +24,7 @@
 }
 .createLink { color: var(--accent); text-decoration: none; }
 .card {
+  position: relative;
   flex: 1;
   min-height: 0;
   background: var(--surface);
@@ -31,5 +32,38 @@
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   overflow: hidden;
+}
+/* The final frame stays fully visible; only the button is interactive. */
+.replayLayer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.replayButton {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 42px;
+  padding: 0 var(--space-4);
+  border: none;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: transform 120ms cubic-bezier(0.22, 1, 0.36, 1), filter 120ms ease;
+}
+.replayButton:hover { transform: translateY(-1px); filter: brightness(1.05); }
+.replayButton:active { transform: translateY(0); }
+.replayIcon { font-size: 16px; line-height: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .replayButton { transition: none; }
+  .replayButton:hover { transform: none; }
 }
 .footer { display: flex; flex-direction: column; gap: var(--space-2); }

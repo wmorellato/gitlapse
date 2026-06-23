@@ -16,7 +16,10 @@
       "Bash(echo \"---EXIT:$?---\")",
       "Bash(node -e \"require\\('better-sqlite3'\\); console.log\\('better-sqlite3 loaded OK'\\)\")",
       "Bash(npm test *)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Read(//home/node/.claude/plugins/**)",
+      "Read(//home/node/.claude/**)",
+      "Skill(impeccable:impeccable)"
     ]
   }
 }

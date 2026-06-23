@@ -6,8 +6,8 @@ import { CommitInfo } from "@/components/CommitInfo";
 
 function api(overrides = {}) {
   return {
-    index: 0, isPlaying: false, speed: 1,
-    play: vi.fn(), pause: vi.fn(), toggle: vi.fn(),
+    index: 0, isPlaying: false, speed: 1, atEnd: false,
+    play: vi.fn(), pause: vi.fn(), toggle: vi.fn(), replay: vi.fn(),
     next: vi.fn(), prev: vi.fn(), seek: vi.fn(), setSpeed: vi.fn(),
     ...overrides
   };
@@ -19,6 +19,24 @@ describe("Controls", () => {
     render(<Controls player={player} />);
     await userEvent.click(screen.getByRole("button", { name: /play/i }));
     expect(player.toggle).toHaveBeenCalled();
+  });
+
+  it("shows Pause while playing", () => {
+    render(<Controls player={api({ isPlaying: true })} />);
+    expect(screen.getByRole("button", { name: /pause/i })).toBeTruthy();
+  });
+
+  it("offers Replay at the end and restarts on click", async () => {
+    const player = api({ atEnd: true });
+    render(<Controls player={player} />);
+    await userEvent.click(screen.getByRole("button", { name: /replay/i }));
+    expect(player.replay).toHaveBeenCalled();
+    expect(player.toggle).not.toHaveBeenCalled();
+  });
+
+  it("keeps showing Pause while the final frame is still playing", () => {
+    render(<Controls player={api({ atEnd: true, isPlaying: true })} />);
+    expect(screen.getByRole("button", { name: /pause/i })).toBeTruthy();
   });
 });
 

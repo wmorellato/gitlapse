@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeAll, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe, it, expect, beforeAll, afterEach, vi } from "vitest";
+import { render, screen, act } from "@testing-library/react";
 import { Player } from "@/components/Player";
 import type { AnimationPayload } from "@/lib/types";
 
 beforeAll(() => {
-  Element.prototype.scrollIntoView = vi.fn();
+  Element.prototype.scrollTo = vi.fn();
 });
 
 const payload: AnimationPayload = {
@@ -37,5 +37,20 @@ describe("Player", () => {
     const single: AnimationPayload = { ...payload, commits: [payload.commits[0]] };
     render(<Player payload={single} />);
     expect(screen.getByRole("button", { name: /play/i })).toBeTruthy();
+  });
+
+  describe("at end of playback", () => {
+    afterEach(() => vi.useRealTimers());
+
+    it("reveals a Replay affordance once autoplay finishes", () => {
+      vi.useFakeTimers();
+      render(<Player payload={payload} />);
+      // Autoplay advances through the two commits; one cycle per step, then it
+      // stops at the end and the replay affordance should appear.
+      act(() => { vi.advanceTimersByTime(2500); });
+      act(() => { vi.advanceTimersByTime(2500); });
+      // Both the controls button and the viewport overlay expose "Replay".
+      expect(screen.getAllByRole("button", { name: /replay/i }).length).toBeGreaterThan(0);
+    });
   });
 });

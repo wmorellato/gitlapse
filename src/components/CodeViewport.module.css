@@ -1,4 +1,5 @@
 .viewport {
+  position: relative; /* contain popLayout's absolutely-positioned exit rows */
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
@@ -18,8 +19,10 @@
   transition: background-color 0.35s ease;
 }
 
-/* Soft anticipation washes (decoration only). */
-.viewport[data-phase="anticipate"] .row[data-type="add"] { background-color: var(--add-wash); }
+/* Soft change washes (decoration only). Additions are flagged while they grow
+   in during apply; once settled they become context and the wash clears.
+   Removals stay washed for the whole time they're on screen. */
+.row[data-type="add"] { background-color: var(--add-wash); }
 .row[data-type="remove"] { background-color: var(--remove-wash); }
 
 .gutter {

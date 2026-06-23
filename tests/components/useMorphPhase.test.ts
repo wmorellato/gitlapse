@@ -14,18 +14,26 @@ describe("useMorphPhase", () => {
 
   it("runs anticipate -> apply -> idle on a real change", () => {
     const { result, rerender } = renderHook(
-      ({ c, p }) => useMorphPhase(c, p, { dwellMs: 1500, reduced: false, scrubbing: false }),
+      ({ c, p }) => useMorphPhase(c, p, { dwellMs: 1500, holdMs: 1000, reduced: false, scrubbing: false }),
       { initialProps: { c: "a\nb", p: null as string | null } }
     );
     act(() => rerender({ c: "a\nx", p: "a\nb" }));
+    // Phase 1: region painted — old line shown as a removal, no additions yet.
     expect(result.current.phase).toBe("anticipate");
     expect(result.current.firstChangeKey).not.toBeNull();
     expect(result.current.lines.some((l) => l.type === "remove")).toBe(true);
-    act(() => { vi.advanceTimersByTime(600); });
+    expect(result.current.lines.some((l) => l.type === "add")).toBe(false);
+    // The change is held for holdMs before being applied.
+    act(() => { vi.advanceTimersByTime(900); });
+    expect(result.current.phase).toBe("anticipate");
+    act(() => { vi.advanceTimersByTime(200); });
+    // Phase 2: applied — the addition appears.
     expect(result.current.phase).toBe("apply");
-    expect(result.current.lines.some((l) => l.type === "remove")).toBe(false);
-    act(() => { vi.advanceTimersByTime(600); });
+    expect(result.current.lines.some((l) => l.type === "add")).toBe(true);
+    act(() => { vi.advanceTimersByTime(700); });
+    // Phase 3: settled — removals are gone.
     expect(result.current.phase).toBe("idle");
+    expect(result.current.lines.some((l) => l.type === "remove")).toBe(false);
   });
 
   it("snaps instantly when scrubbing (no anticipate phase)", () => {

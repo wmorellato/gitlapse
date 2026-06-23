@@ -4,26 +4,26 @@ import { MotionConfig } from "motion/react";
 import { CodeViewport } from "@/components/CodeViewport";
 
 beforeAll(() => {
-  // jsdom has no layout/scroll; stub so the scroll effect doesn't throw.
-  Element.prototype.scrollIntoView = vi.fn();
+  // jsdom has no layout/scroll; stub so the auto-scroll effect doesn't throw.
+  Element.prototype.scrollTo = vi.fn();
 });
 
 describe("CodeViewport", () => {
   it("renders one row per line on first paint (all context)", () => {
     const { container } = render(
-      <CodeViewport content={"a\nb\nc"} prevContent={null} language="plaintext" dwellMs={1500} scrubbing={false} />
+      <CodeViewport content={"a\nb\nc"} prevContent={null} language="plaintext" dwellMs={1500} holdMs={1000} scrubbing={false} />
     );
     expect(container.querySelectorAll("[data-line]")).toHaveLength(3);
   });
 
   it("omits the line-number gutter for prose and includes it for code", () => {
     const prose = render(
-      <CodeViewport content={"hello world"} prevContent={null} language="markdown" dwellMs={1500} scrubbing={false} />
+      <CodeViewport content={"hello world"} prevContent={null} language="markdown" dwellMs={1500} holdMs={1000} scrubbing={false} />
     );
     expect(prose.container.querySelector("[data-gutter]")).toBeNull();
 
     const code = render(
-      <CodeViewport content={"const x = 1"} prevContent={null} language="typescript" dwellMs={1500} scrubbing={false} />
+      <CodeViewport content={"const x = 1"} prevContent={null} language="typescript" dwellMs={1500} holdMs={1000} scrubbing={false} />
     );
     expect(code.container.querySelector("[data-gutter]")).not.toBeNull();
   });
@@ -31,7 +31,7 @@ describe("CodeViewport", () => {
   it("renders without a beat under reduced motion (still shows the content)", () => {
     const { container } = render(
       <MotionConfig reducedMotion="always">
-        <CodeViewport content={"line one\nline two"} prevContent={"line one"} language="plaintext" dwellMs={1500} scrubbing={false} />
+        <CodeViewport content={"line one\nline two"} prevContent={"line one"} language="plaintext" dwellMs={1500} holdMs={1000} scrubbing={false} />
       </MotionConfig>
     );
     // Final content is present; no crash from the reduced-motion path.
