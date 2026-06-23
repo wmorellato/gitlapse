@@ -9,7 +9,11 @@
   line-height: 1.6;
   font-size: 14px;
 }
-.prose { font-family: var(--font-prose); max-width: var(--measure); }
+.prose { font-family: var(--font-prose); }
+/* Cap the readable measure on the text rows, not the viewport box — otherwise
+   the flex viewport shrinks to the measure and leaves dead space to the right
+   of the minimap rail. */
+.prose .row { max-width: var(--measure); }
 .code  { font-family: var(--font-code); font-size: 13px; }
 
 .row {
