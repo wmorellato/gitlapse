@@ -27,6 +27,7 @@
   position: relative;
   flex: 1;
   min-height: 0;
+  display: flex;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);

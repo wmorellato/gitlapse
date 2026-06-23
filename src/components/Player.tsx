@@ -7,6 +7,7 @@ import { useMorphPhase } from "@/components/useMorphPhase";
 import { CodeViewport } from "@/components/CodeViewport";
 import { CommitInfo } from "@/components/CommitInfo";
 import { Controls } from "@/components/Controls";
+import { Minimap } from "@/components/Minimap";
 import { Timeline } from "@/components/Timeline";
 import { BASE_DWELL_MS, ANTICIPATE_HOLD_MS } from "@/lib/constants";
 import type { AnimationPayload } from "@/lib/types";
@@ -71,6 +72,7 @@ export function Player({ payload }: { payload: AnimationPayload }) {
           language={payload.language}
           holdMs={holdMs}
         />
+        <Minimap lines={morph.lines} reduced={reduced} />
         <AnimatePresence>
           {finished && (
             <motion.div

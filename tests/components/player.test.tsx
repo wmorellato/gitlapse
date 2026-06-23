@@ -26,6 +26,12 @@ describe("Player", () => {
     expect(screen.getByRole("slider", { name: /timeline/i })).toBeTruthy();
   });
 
+  it("renders the minimap overview alongside the content", () => {
+    const { container } = render(<Player payload={payload} />);
+    // One bar per line of the current commit's content (first commit: "a").
+    expect(container.querySelectorAll("[data-bar]").length).toBeGreaterThan(0);
+  });
+
   it("autoplays on mount so a shared link shows the morph immediately", () => {
     // jsdom reports no reduced-motion preference, so playback starts on mount
     // and the play control flips to Pause.
