@@ -20,18 +20,19 @@ export function Controls({ player }: { player: PlayerApi }) {
         {showReplay ? "↻" : player.isPlaying ? "⏸" : "▶"}
       </button>
       <button onClick={player.next} aria-label="Next commit" aria-keyshortcuts="ArrowRight" className={styles.btn}>⏭</button>
-      <div className={styles.spacer}></div>
-      <label className={styles.label}>
-        Speed
-        <select
-          aria-label="Speed"
-          value={player.speed}
-          onChange={(e) => player.setSpeed(Number(e.target.value))}
-          className={styles.speed}
-        >
-          {SPEEDS.map((s) => <option key={s} value={s}>{s}×</option>)}
-        </select>
-      </label>
+      <div className={styles.speeds} role="group" aria-label="Playback speed">
+        {SPEEDS.map((s) => (
+          <button
+            key={s}
+            type="button"
+            className={styles.speedBtn}
+            aria-pressed={player.speed === s}
+            onClick={() => player.setSpeed(s)}
+          >
+            {s}×
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

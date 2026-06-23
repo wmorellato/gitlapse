@@ -38,6 +38,14 @@ describe("Controls", () => {
     render(<Controls player={api({ atEnd: true, isPlaying: true })} />);
     expect(screen.getByRole("button", { name: /pause/i })).toBeTruthy();
   });
+
+  it("marks the active speed and sets a new one from the segmented control", async () => {
+    const player = api({ speed: 1 });
+    render(<Controls player={player} />);
+    expect(screen.getByRole("button", { name: "1×" }).getAttribute("aria-pressed")).toBe("true");
+    await userEvent.click(screen.getByRole("button", { name: "4×" }));
+    expect(player.setSpeed).toHaveBeenCalledWith(4);
+  });
 });
 
 describe("CommitInfo", () => {

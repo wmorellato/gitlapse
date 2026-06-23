@@ -51,7 +51,11 @@ export function Player({ payload }: { payload: AnimationPayload }) {
       <header className={styles.header}>
         <span className={styles.source}>
           {payload.repo.displayName} · {payload.filePath}
-          {payload.truncated && <span className={styles.pill}>truncated</span>}
+          {payload.truncated && (
+            <span className={styles.pill} title={`History was long — showing the most recent ${commits.length} commits`}>
+              truncated
+            </span>
+          )}
         </span>
         <a className={styles.createLink} href="/create">Create your own</a>
       </header>
