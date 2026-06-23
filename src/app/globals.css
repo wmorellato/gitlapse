@@ -9,6 +9,10 @@
   /* soft, harmonized change washes */
   --add-wash: rgba(34, 197, 94, 0.14);
   --remove-wash: rgba(244, 63, 94, 0.12);
+  /* Minimap bars: same add/remove hues, more opaque so thin bars stay legible. */
+  --minimap-track: rgba(107, 114, 128, 0.35);
+  --minimap-add: rgba(34, 197, 94, 0.55);
+  --minimap-remove: rgba(244, 63, 94, 0.5);
 
   --font-prose: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-code: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;

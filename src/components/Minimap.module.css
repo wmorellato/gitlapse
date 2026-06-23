@@ -1,0 +1,33 @@
+.minimap {
+  flex: 0 0 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: var(--space-3) var(--space-2);
+  border-left: 1px solid var(--border);
+  overflow: hidden;
+}
+
+/* Each row claims an equal share of the height, so the whole file always fits
+   the card and the rail never scrolls. */
+.row {
+  flex: 1 1 0;
+  min-height: 1px;
+  display: flex;
+  align-items: center;
+}
+
+.bar {
+  height: 3px;
+  max-height: 70%;
+  border-radius: 2px;
+  background: var(--minimap-track);
+  transition: background-color 0.35s ease;
+}
+.bar[data-type="add"] { background: var(--minimap-add); }
+.bar[data-type="remove"] { background: var(--minimap-remove); }
+
+/* Reading comfort wins on small screens — drop the rail. */
+@media (max-width: 640px) {
+  .minimap { display: none; }
+}
