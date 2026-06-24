@@ -5,7 +5,7 @@ export default defineConfig({
   timeout: 60000,
   projects: [
     { name: "setup", testMatch: /fixture-repo\.setup\.ts/ },
-    { name: "e2e", dependencies: ["setup"], testMatch: /flow\.spec\.ts/ }
+    { name: "e2e", dependencies: ["setup"], testMatch: /\.spec\.ts/ }
   ],
   webServer: {
     command: "npm run build && npm run start",
