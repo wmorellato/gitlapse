@@ -86,6 +86,7 @@ All configuration is via environment variables.
 | `DB_FILE` | `.data/animations.db` | SQLite database file path |
 | `ALLOW_LOCAL_PATHS` | _(unset)_ | Set to `1` to allow local filesystem repos |
 | `LOCAL_ROOT` | cwd | Root directory local repos must live under |
+| `LANDING_EXAMPLE_IDS` | _(unset)_ | Comma-separated `/a/<id>` ids to autoplay as the demo on the landing page; first that exists is used. Unset → no demo, just headline + CTA. |
 
 Operational limits (in `src/lib/constants.ts`): up to **100 commits** per file, **256 KB** max file size, **5 MB** max stored payload, **60s** clone timeout, **10 requests/min** per IP, and **4** concurrent extractions.
 

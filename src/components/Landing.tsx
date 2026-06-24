@@ -2,7 +2,11 @@ import { Player } from "@/components/Player";
 import type { AnimationPayload } from "@/lib/types";
 import styles from "./Landing.module.css";
 
-export function Landing({ demo }: { demo: AnimationPayload | null }) {
+interface LandingProps {
+  demo: AnimationPayload | null;
+}
+
+export function Landing({ demo }: LandingProps) {
   return (
     <main className={styles.page}>
       <h1 className={styles.title}>Watch a file evolve across its history.</h1>
@@ -15,7 +19,7 @@ export function Landing({ demo }: { demo: AnimationPayload | null }) {
         </div>
       )}
       <a className={styles.cta} href="/create">
-        Animate a file →
+        Animate a file <span aria-hidden>→</span>
       </a>
     </main>
   );
