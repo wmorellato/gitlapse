@@ -11,7 +11,7 @@ export function Landing({ demo }: LandingProps) {
     <main className={styles.page}>
       <h1 className={styles.title}>Watch a file evolve across its history.</h1>
       <p className={styles.subtitle}>
-        Commit Animation replays a file commit by commit — a calm, shareable diff morph.
+        Gitlapse replays a file commit by commit — a calm, shareable diff morph.
       </p>
       {demo && (
         <div className={styles.demo}>

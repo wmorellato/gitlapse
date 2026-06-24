@@ -1,6 +1,6 @@
 import "./globals.css";
 
-export const metadata = { title: "Commit Animation" };
+export const metadata = { title: "Gitlapse" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

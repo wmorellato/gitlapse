@@ -1,8 +1,8 @@
-# Commit Animation
+# Gitlapse
 
 Watch a single file evolve across its git history — a calm, share-worthy diff morph.
 
-Commit Animation extracts one file's content at each commit and plays it back as a line-level "diff morph": unchanged lines glide to their new positions, added lines grow in, and removed lines collapse out, with a soft anticipation highlight before each change. The result is a self-contained, shareable artifact at `/a/<id>` — hand someone an unguessable link and they can watch how a file got written or built.
+Gitlapse extracts one file's content at each commit and plays it back as a line-level "diff morph": unchanged lines glide to their new positions, added lines grow in, and removed lines collapse out, with a soft anticipation highlight before each change. The result is a self-contained, shareable artifact at `/a/<id>` — hand someone an unguessable link and they can watch how a file got written or built.
 
 ![Screenshot of the player](docs/screenshot.png)
 <!-- TODO: replace docs/screenshot.png with a real screenshot of the player -->
@@ -96,10 +96,10 @@ The included `Dockerfile` produces a standalone production image and persists th
 
 ```bash
 # Build the image
-docker build -t commit-animation .
+docker build -t gitlapse .
 
 # Run it, persisting the SQLite DB to a named volume
-docker run -p 3000:3000 -v commit-animation-data:/app/.data commit-animation
+docker run -p 3000:3000 -v gitlapse-data:/app/.data gitlapse
 ```
 
 The container exposes port `3000`, stores its database at `/app/.data/animations.db` (mounted as a volume), and includes `git` for cloning. It does **not** enable local-path support — pass `-e ALLOW_LOCAL_PATHS=1` and mount your repos plus set `LOCAL_ROOT` if you want that on a private instance.

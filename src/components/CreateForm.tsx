@@ -72,7 +72,7 @@ export function CreateForm() {
   return (
     <main className={styles.page}>
       <div className={styles.card}>
-        <h1 className={styles.title}>Commit Animation</h1>
+        <h1 className={styles.title}>Gitlapse</h1>
         <p className={styles.subtitle}>Watch a file evolve across its history.</p>
         <form onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           <label className={styles.field}>Repository URL
