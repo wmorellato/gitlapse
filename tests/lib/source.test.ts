@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, afterEach } from "vitest";
 import { parseRemoteFileUrl } from "@/lib/source";
 
 function code(fn: () => unknown): string {
@@ -45,5 +45,51 @@ describe("parseRemoteFileUrl", () => {
   it("rejects a non-file page on an allowlisted host with not_a_file_url", () => {
     expect(code(() => parseRemoteFileUrl(new URL("https://github.com/owner/repo/issues/1")))).toBe("not_a_file_url");
     expect(code(() => parseRemoteFileUrl(new URL("https://github.com/owner/repo/blob/main")))).toBe("not_a_file_url");
+  });
+});
+
+import os from "node:os";
+import path from "node:path";
+import { promises as fs } from "node:fs";
+import { buildRepo, cleanupRepo } from "../fixtures/git";
+import { inferLocalSource } from "@/lib/source";
+
+describe("inferLocalSource", () => {
+  const prevAllow = process.env.ALLOW_LOCAL_PATHS;
+  const prevRoot = process.env.LOCAL_ROOT;
+  afterEach(() => {
+    process.env.ALLOW_LOCAL_PATHS = prevAllow;
+    process.env.LOCAL_ROOT = prevRoot;
+  });
+
+  it("infers the repo root and relative path from an absolute file path", async () => {
+    const dir = await buildRepo([{ path: "src/index.ts", content: "v1", message: "init" }]);
+    process.env.ALLOW_LOCAL_PATHS = "1";
+    process.env.LOCAL_ROOT = dir;
+    const res = await inferLocalSource(path.join(dir, "src/index.ts"));
+    expect(res).toEqual({ repoInput: dir, filePath: "src/index.ts" });
+    await cleanupRepo(dir);
+  });
+
+  it("throws local_disabled when local paths are off", async () => {
+    delete process.env.ALLOW_LOCAL_PATHS;
+    await expect(inferLocalSource("/tmp/whatever/a.txt")).rejects.toMatchObject({ code: "local_disabled" });
+  });
+
+  it("throws bad_path for a file outside LOCAL_ROOT", async () => {
+    const dir = await buildRepo([{ path: "a.txt", content: "v1", message: "init" }]);
+    process.env.ALLOW_LOCAL_PATHS = "1";
+    process.env.LOCAL_ROOT = dir;
+    await expect(inferLocalSource("/etc/hosts")).rejects.toMatchObject({ code: "bad_path" });
+    await cleanupRepo(dir);
+  });
+
+  it("throws no_repo_found when there is no enclosing git repo", async () => {
+    const plain = await fs.mkdtemp(path.join(os.tmpdir(), "ca-norepo-"));
+    await fs.writeFile(path.join(plain, "a.txt"), "hi");
+    process.env.ALLOW_LOCAL_PATHS = "1";
+    process.env.LOCAL_ROOT = plain;
+    await expect(inferLocalSource(path.join(plain, "a.txt"))).rejects.toMatchObject({ code: "no_repo_found" });
+    await fs.rm(plain, { recursive: true, force: true });
   });
 });

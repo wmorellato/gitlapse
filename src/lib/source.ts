@@ -1,4 +1,9 @@
-import { ValidationError } from "@/lib/validate";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+import path from "node:path";
+import { ValidationError, validateLocalPath } from "@/lib/validate";
+
+const run = promisify(execFile);
 
 // Given the path segments of a repo URL (segs[0]=owner, segs[1]=repo, …),
 // return the file-path segments for this host, or null if it's not a file link.
@@ -28,4 +33,20 @@ export function parseRemoteFileUrl(url: URL): { repoInput: string; filePath: str
   }
   const filePath = fileSegs.map((s) => decodeURIComponent(s)).join("/");
   return { repoInput: `https://${url.hostname}/${owner}/${repo}`, filePath };
+}
+
+export async function inferLocalSource(rawPath: string): Promise<{ repoInput: string; filePath: string }> {
+  // Reuses the ALLOW_LOCAL_PATHS gate + LOCAL_ROOT containment (throws local_disabled / bad_path).
+  const file = validateLocalPath(rawPath);
+  let root: string;
+  try {
+    const { stdout } = await run("git", ["-C", path.dirname(file), "rev-parse", "--show-toplevel"]);
+    root = stdout.trim();
+  } catch (err) {
+    throw new ValidationError("no_repo_found", "No git repository found above that file.", { cause: err });
+  }
+  // The discovered repo root must also be inside the allowed root.
+  const repoRoot = validateLocalPath(root);
+  const filePath = path.relative(repoRoot, file).split(path.sep).join("/");
+  return { repoInput: repoRoot, filePath };
 }
