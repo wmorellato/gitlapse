@@ -54,4 +54,36 @@ describe("POST /api/animations", () => {
     const joined = (await readSse(res)).join("\n");
     expect(joined).toContain("event: error");
   });
+
+  it("resolves a single absolute-path input and streams done", async () => {
+    const dir = await buildRepo([{ path: "a.txt", content: "v1", message: "init" }]);
+    process.env.LOCAL_ROOT = dir;
+    const req = new Request("http://x", {
+      method: "POST",
+      body: JSON.stringify({ input: path.join(dir, "a.txt") })
+    });
+    const joined = (await readSse(await POST(req))).join("\n");
+    expect(joined).toContain("event: done");
+    expect(joined).toMatch(/"id":"[A-Za-z0-9_-]{16}"/);
+  });
+
+  it("streams an error event for a bare repo URL input", async () => {
+    const req = new Request("http://x", {
+      method: "POST",
+      body: JSON.stringify({ input: "https://github.com/owner/repo" })
+    });
+    const joined = (await readSse(await POST(req))).join("\n");
+    expect(joined).toContain("event: error");
+    expect(joined).toContain("need_file");
+  });
+
+  it("streams an error event for unrecognized input", async () => {
+    const req = new Request("http://x", {
+      method: "POST",
+      body: JSON.stringify({ input: "not a url or path" })
+    });
+    const joined = (await readSse(await POST(req))).join("\n");
+    expect(joined).toContain("event: error");
+    expect(joined).toContain("unrecognized_input");
+  });
 });
