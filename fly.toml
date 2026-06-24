@@ -1,0 +1,33 @@
+# Fly.io config for Gitlapse.
+# App names are globally unique — change `app` below to something available,
+# then run `fly apps create <that-name>` (or `fly launch --no-deploy`).
+app = "gitlapse"
+primary_region = "iad"   # pick a region near you: `fly platform regions`
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  DB_FILE = "/app/.data/animations.db"
+  # Enable local-path repos only on a trusted single-user instance — leave OFF for public.
+  # ALLOW_LOCAL_PATHS = "0"
+  # To pin a demo on the landing page, set comma-separated /a/<id> ids:
+  # LANDING_EXAMPLE_IDS = ""
+
+# Persistent disk for the SQLite database. The volume is tied to one machine,
+# so this app MUST stay single-instance — do not scale `count` above 1.
+[mounts]
+  source = "data"
+  destination = "/app/.data"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = "stop"   # scale to zero when idle to minimize cost
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"   # Next.js standalone runtime; drop to 256mb to save cost if it doesn't OOM

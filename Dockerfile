@@ -21,5 +21,7 @@ COPY --from=build /app/.next/static ./.next/static
 RUN mkdir -p /app/.data
 VOLUME ["/app/.data"]
 ENV DB_FILE=/app/.data/animations.db
+# Next.js standalone server binds to HOSTNAME; Fly needs 0.0.0.0 to route to it.
+ENV HOSTNAME=0.0.0.0 PORT=3000
 EXPOSE 3000
 CMD ["node", "server.js"]
