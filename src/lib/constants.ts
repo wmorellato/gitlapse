@@ -12,3 +12,14 @@ export const LOCAL_ROOT = process.env.LOCAL_ROOT ?? "";
 export const MAX_CONCURRENT_EXTRACTIONS = 4;
 export const RATE_LIMIT_WINDOW_MS = 60000;
 export const RATE_LIMIT_MAX = 10;
+
+export function parseExampleIds(raw: string | undefined): string[] {
+  if (!raw) return [];
+  return raw
+    .split(",")
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+}
+
+// Pinned /a/<id> ids to showcase on the landing page, in priority order.
+export const LANDING_EXAMPLE_IDS = parseExampleIds(process.env.LANDING_EXAMPLE_IDS);
