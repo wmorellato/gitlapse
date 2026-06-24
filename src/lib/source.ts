@@ -1,0 +1,31 @@
+import { ValidationError } from "@/lib/validate";
+
+// Given the path segments of a repo URL (segs[0]=owner, segs[1]=repo, …),
+// return the file-path segments for this host, or null if it's not a file link.
+function fileSegsFor(host: string, segs: string[]): string[] | null {
+  if (host === "github.com") return segs[2] === "blob" ? segs.slice(4) : null;
+  if (host === "gitlab.com") return segs[2] === "-" && segs[3] === "blob" ? segs.slice(5) : null;
+  if (host === "bitbucket.org") return segs[2] === "src" ? segs.slice(4) : null;
+  if (host === "codeberg.org") {
+    return segs[2] === "src" && ["branch", "tag", "commit"].includes(segs[3]) ? segs.slice(5) : null;
+  }
+  return null;
+}
+
+export function parseRemoteFileUrl(url: URL): { repoInput: string; filePath: string } {
+  const segs = url.pathname.split("/").filter(Boolean);
+  if (segs.length < 2) {
+    throw new ValidationError("not_a_file_url", "That doesn't look like a link to a file in the repo.");
+  }
+  const owner = segs[0];
+  const repo = segs[1].replace(/\.git$/, "");
+  if (segs.length === 2) {
+    throw new ValidationError("need_file", "That's a repository URL — paste a link to a file, or use manual entry.");
+  }
+  const fileSegs = fileSegsFor(url.hostname, segs);
+  if (!fileSegs || fileSegs.length === 0) {
+    throw new ValidationError("not_a_file_url", "That doesn't look like a link to a file in the repo.");
+  }
+  const filePath = fileSegs.map((s) => decodeURIComponent(s)).join("/");
+  return { repoInput: `https://${url.hostname}/${owner}/${repo}`, filePath };
+}
