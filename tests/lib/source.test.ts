@@ -52,7 +52,7 @@ import os from "node:os";
 import path from "node:path";
 import { promises as fs } from "node:fs";
 import { buildRepo, cleanupRepo } from "../fixtures/git";
-import { inferLocalSource } from "@/lib/source";
+import { inferLocalSource, resolveInput } from "@/lib/source";
 
 describe("inferLocalSource", () => {
   const prevAllow = process.env.ALLOW_LOCAL_PATHS;
@@ -91,5 +91,51 @@ describe("inferLocalSource", () => {
     process.env.LOCAL_ROOT = plain;
     await expect(inferLocalSource(path.join(plain, "a.txt"))).rejects.toMatchObject({ code: "no_repo_found" });
     await fs.rm(plain, { recursive: true, force: true });
+  });
+});
+
+describe("resolveInput", () => {
+  const prevAllow = process.env.ALLOW_LOCAL_PATHS;
+  const prevRoot = process.env.LOCAL_ROOT;
+  afterEach(() => {
+    process.env.ALLOW_LOCAL_PATHS = prevAllow;
+    process.env.LOCAL_ROOT = prevRoot;
+  });
+
+  it("dispatches an allowlisted file URL to the remote parser", async () => {
+    await expect(resolveInput("https://github.com/o/r/blob/main/a.ts"))
+      .resolves.toEqual({ repoInput: "https://github.com/o/r", filePath: "a.ts" });
+  });
+
+  it("propagates need_file for a bare repo URL", async () => {
+    await expect(resolveInput("https://github.com/o/r")).rejects.toMatchObject({ code: "need_file" });
+  });
+
+  it("rejects a non-allowlisted https host as unrecognized_input", async () => {
+    await expect(resolveInput("https://evil.com/o/r/blob/main/a.ts"))
+      .rejects.toMatchObject({ code: "unrecognized_input" });
+  });
+
+  it("rejects junk and empty input as unrecognized_input", async () => {
+    await expect(resolveInput("not a url or path")).rejects.toMatchObject({ code: "unrecognized_input" });
+    await expect(resolveInput("   ")).rejects.toMatchObject({ code: "unrecognized_input" });
+  });
+
+  it("dispatches an absolute path to local inference", async () => {
+    const dir = await buildRepo([{ path: "a.txt", content: "v1", message: "init" }]);
+    process.env.ALLOW_LOCAL_PATHS = "1";
+    process.env.LOCAL_ROOT = dir;
+    await expect(resolveInput(path.join(dir, "a.txt")))
+      .resolves.toEqual({ repoInput: dir, filePath: "a.txt" });
+    await cleanupRepo(dir);
+  });
+
+  it("dispatches a file:// URL to local inference", async () => {
+    const dir = await buildRepo([{ path: "a.txt", content: "v1", message: "init" }]);
+    process.env.ALLOW_LOCAL_PATHS = "1";
+    process.env.LOCAL_ROOT = dir;
+    await expect(resolveInput(`file://${path.join(dir, "a.txt")}`))
+      .resolves.toEqual({ repoInput: dir, filePath: "a.txt" });
+    await cleanupRepo(dir);
   });
 });

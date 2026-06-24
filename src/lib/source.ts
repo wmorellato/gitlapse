@@ -2,6 +2,7 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import path from "node:path";
 import { ValidationError, validateLocalPath } from "@/lib/validate";
+import { ALLOWED_HOSTS } from "@/lib/constants";
 
 const run = promisify(execFile);
 
@@ -49,4 +50,26 @@ export async function inferLocalSource(rawPath: string): Promise<{ repoInput: st
   const repoRoot = validateLocalPath(root);
   const filePath = path.relative(repoRoot, file).split(path.sep).join("/");
   return { repoInput: repoRoot, filePath };
+}
+
+const UNRECOGNIZED =
+  "Couldn't tell what that is — paste a file's URL (or an absolute file path), or enter the repo and path manually.";
+
+export async function resolveInput(raw: string): Promise<{ repoInput: string; filePath: string }> {
+  const trimmed = raw.trim();
+  if (trimmed === "") throw new ValidationError("unrecognized_input", UNRECOGNIZED);
+
+  let url: URL | null = null;
+  try { url = new URL(trimmed); } catch { url = null; }
+
+  if (url) {
+    if (url.protocol === "file:") return inferLocalSource(decodeURIComponent(url.pathname));
+    if (url.protocol === "https:" && (ALLOWED_HOSTS as readonly string[]).includes(url.hostname)) {
+      return parseRemoteFileUrl(url);
+    }
+    throw new ValidationError("unrecognized_input", UNRECOGNIZED);
+  }
+
+  if (trimmed.startsWith("/")) return inferLocalSource(trimmed);
+  throw new ValidationError("unrecognized_input", UNRECOGNIZED);
 }
