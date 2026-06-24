@@ -21,6 +21,8 @@ function parseChunk(buffer: string): { events: SseEvent[]; rest: string } {
 
 export function CreateForm() {
   const router = useRouter();
+  const [mode, setMode] = useState<"url" | "manual">("url");
+  const [input, setInput] = useState("");
   const [repoInput, setRepoInput] = useState("");
   const [filePath, setFilePath] = useState("");
   const [status, setStatus] = useState<string | null>(null);
@@ -34,7 +36,7 @@ export function CreateForm() {
       const res = await fetch("/api/animations", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ repoInput, filePath })
+        body: JSON.stringify(mode === "url" ? { input } : { repoInput, filePath })
       });
       if (!res.ok || !res.body) throw new Error("Request failed");
       const reader = res.body.getReader();
@@ -75,16 +77,28 @@ export function CreateForm() {
         <h1 className={styles.title}>Gitlapse</h1>
         <p className={styles.subtitle}>Watch a file evolve across its history.</p>
         <form onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <label className={styles.field}>Repository URL
-            <input className={styles.input} value={repoInput} onChange={(e) => setRepoInput(e.target.value)}
-              placeholder="https://github.com/owner/repo" required />
-          </label>
-          <label className={styles.field}>File path
-            <input className={styles.input} value={filePath} onChange={(e) => setFilePath(e.target.value)}
-              placeholder="src/index.ts" required />
-          </label>
+          {mode === "url" ? (
+            <label className={styles.field}>File URL
+              <input className={styles.input} value={input} onChange={(e) => setInput(e.target.value)}
+                placeholder="https://github.com/owner/repo/blob/main/src/index.ts" required />
+            </label>
+          ) : (
+            <>
+              <label className={styles.field}>Repository URL
+                <input className={styles.input} value={repoInput} onChange={(e) => setRepoInput(e.target.value)}
+                  placeholder="https://github.com/owner/repo" required />
+              </label>
+              <label className={styles.field}>File path
+                <input className={styles.input} value={filePath} onChange={(e) => setFilePath(e.target.value)}
+                  placeholder="src/index.ts" required />
+              </label>
+            </>
+          )}
           <button className={styles.button} type="submit" disabled={busy}>Animate</button>
         </form>
+        <button type="button" className={styles.linkButton} onClick={() => setMode(mode === "url" ? "manual" : "url")}>
+          {mode === "url" ? "Enter repo and path manually" : "Paste a file URL instead"}
+        </button>
         {status && <p className={styles.status}>{status}</p>}
         {error && <p role="alert" className={styles.error}>{error}</p>}
       </div>
