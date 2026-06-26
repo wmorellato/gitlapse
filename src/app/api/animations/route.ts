@@ -2,6 +2,7 @@ import { extractAnimation, type Progress } from "@/lib/extract";
 import { createAnimation } from "@/lib/store/animations";
 import { ValidationError } from "@/lib/validate";
 import { tryAcquireSlot, checkRateLimit } from "@/lib/limits";
+import { resolveInput } from "@/lib/source";
 
 export const dynamic = "force-dynamic";
 
@@ -16,13 +17,12 @@ function clientIp(req: Request): string {
 }
 
 export async function POST(req: Request): Promise<Response> {
-  let body: { repoInput?: string; filePath?: string } = {};
+  let body: { input?: string; repoInput?: string; filePath?: string } = {};
   try {
-    body = (await req.json()) as { repoInput?: string; filePath?: string };
+    body = (await req.json()) as { input?: string; repoInput?: string; filePath?: string };
   } catch {
     body = {};
   }
-  const { repoInput, filePath } = body;
   const ip = clientIp(req);
 
   const stream = new ReadableStream<Uint8Array>({
@@ -42,6 +42,13 @@ export async function POST(req: Request): Promise<Response> {
         return;
       }
       try {
+        let repoInput = body.repoInput;
+        let filePath = body.filePath;
+        if (typeof body.input === "string" && body.input.trim() !== "") {
+          const resolved = await resolveInput(body.input);
+          repoInput = resolved.repoInput;
+          filePath = resolved.filePath;
+        }
         if (!repoInput || !filePath) {
           throw new ValidationError("bad_input", "Repository and file path are required.");
         }
