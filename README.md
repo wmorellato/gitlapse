@@ -4,7 +4,9 @@ Watch a single file evolve across its git history — a calm, share-worthy diff 
 
 Gitlapse extracts one file's content at each commit and plays it back as a line-level "diff morph": unchanged lines glide to their new positions, added lines grow in, and removed lines collapse out, with a soft anticipation highlight before each change. The result is a self-contained, shareable artifact at `/a/<id>` — hand someone an unguessable link and they can watch how a file got written or built.
 
-https://github.com/user-attachments/assets/55da47f1-0694-4760-a9da-45a5d962675f
+<div align="center">
+  <video src="https://github.com/user-attachments/assets/55da47f1-0694-4760-a9da-45a5d962675f"/>
+</div>
 
 ## How it works
 
