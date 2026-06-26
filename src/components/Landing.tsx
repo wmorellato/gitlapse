@@ -13,14 +13,14 @@ export function Landing({ demo }: LandingProps) {
       <p className={styles.subtitle}>
         Gitlapse replays a file commit by commit — a calm, shareable diff morph.
       </p>
+      <a className={styles.cta} href="/create">
+        Animate a file <span aria-hidden>→</span>
+      </a>
       {demo && (
         <div className={styles.demo}>
           <Player payload={demo} />
         </div>
       )}
-      <a className={styles.cta} href="/create">
-        Animate a file <span aria-hidden>→</span>
-      </a>
     </main>
   );
 }
